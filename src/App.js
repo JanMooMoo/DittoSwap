@@ -5,7 +5,7 @@ import './App.css';
 import Navbar from './Components/Navbar';
 //import Web3 from 'web3';
 import {ditto_swap_address, ditto_swap_abi} from './DittoPair';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink} from "react-csv";
 import numeral from 'numeral';
 
 
@@ -52,8 +52,7 @@ class App extends Component {
         const web3 = new Web3('https://bsc-dataseed1.binance.org:443');
         const ditto_pair=  new web3.eth.Contract(ditto_swap_abi, ditto_swap_address);
         this.setState({ditto_pair:ditto_pair});
-        const currentBlock = await web3.eth.getBlockNumber();
-        const network = await web3.eth.net.getNetworkType();
+        const currentBlock = await web3.eth.getBlockNumber()
         this.setState({fromBlock:currentBlock - 28800,toBlock:currentBlock,lastKnownBlock:currentBlock })
          // this.setState({fromBlock:currentBlock - 5000,toBlock:currentBlock,lastKnownBlock:currentBlock })
 
@@ -69,7 +68,7 @@ class App extends Component {
                   fromBlock:numeral(this.state.fromBlock).format('0,00'),
                   toBlock:numeral(this.state.toBlock).format('0,00')}]})
                       
-         let index = this.state.filter.findIndex(x=>x.address ==  this.state.address_swaps[i].address)
+         let index = this.state.filter.findIndex(x=>x.address ===  this.state.address_swaps[i].address)
           if(index === -1){
             this.setState({filter:[...this.state.filter,this.state.address_swaps[i]]})
           }
@@ -114,7 +113,6 @@ this.setState({
   const ditto_pair=  new web3.eth.Contract(ditto_swap_abi, ditto_swap_address);
   this.setState({ditto_pair:ditto_pair});
   const currentBlock = await web3.eth.getBlockNumber();
-  const network = await web3.eth.net.getNetworkType();
   this.setState({lastKnownBlock:currentBlock })
 
   ditto_pair.getPastEvents("Swap",{fromBlock: this.state.fromBlock, toBlock:this.state.toBlock})
@@ -130,7 +128,7 @@ this.setState({
             toBlock:numeral(this.state.toBlock).format('0,00')}]})
 
   
-   let index = this.state.filter.findIndex(x=>x.address ==  this.state.address_swaps[i].address)
+   let index = this.state.filter.findIndex(x=>x.address ===  this.state.address_swaps[i].address)
     if(index === -1){
       this.setState({filter:[...this.state.filter,this.state.address_swaps[i]]})
     }
