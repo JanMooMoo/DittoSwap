@@ -367,7 +367,6 @@ this.loadDay()
         <button className="search-button" onClick={this.tradingCompetition} >View Trading Competition</button>
         
         <p>{this.state.blockError}</p>
-        {<Countdown deadline={this.state.end_time} className="mt-5 mb-5"/>}
 
         <div className="body">
         <div className="row">
@@ -377,7 +376,12 @@ this.loadDay()
          </div>
          </div>
          <div className="table-wrapper">
+         <div> {<Countdown deadline={this.state.end_time}/>}</div>
+
                 <table className="table-size">
+               
+                 
+  
                  <thead>
                  <tr>
                  <th>No.</th>
