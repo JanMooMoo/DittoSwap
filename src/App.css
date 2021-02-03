@@ -150,6 +150,20 @@
   cursor:pointer;
 }
 
+.verify{
+  background:rgb(0, 5, 14);
+  font-size:15px;
+  border:1px solid black;
+  margin-top:10px;
+  width:286px;
+  min-width:97.2%;
+  border-radius:5px;
+  color:white;
+  border:1px solid rgb(97, 95, 95);
+  height:25px;
+  cursor:pointer;
+}
+
 }
 
 .form-group input :active,:focus{
@@ -301,6 +315,22 @@
 
 }
 
+.verify{
+  background:rgb(0, 5, 14);
+  font-size:15px;
+  border:1px solid black;
+  margin-top:10px;
+  width:286px;
+  max-width:286px;
+  background:rgb(0, 5, 14);
+  border-radius:5px;
+  color:white;
+  border:1px solid rgb(97, 95, 95);
+  height:25px;
+  cursor:pointer;
+  
+}
+
 
 .ditto-logo{
   border:1px solid rgb(255, 255, 255);
@@ -428,4 +458,10 @@
   background:linear-gradient(30deg,rgb(5, 7, 26),rgb(18, 52, 71),rgb(63, 22, 116),rgb(5, 7, 26));
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 25px;
+}
+
+.countdown{
+  margin-top: 10px;
+  margin-bottom: 20px;
+  color:rgb(190, 196, 236);
 }
