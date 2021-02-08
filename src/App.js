@@ -30,6 +30,7 @@ class App extends Component {
 
         start_time:0,
         end_time:0,
+        lastKnownBlock:0,
         lastKnownTime:0,
         
         proxyFrom:0,
@@ -49,16 +50,20 @@ class App extends Component {
 
         transfers:[],
         sorted_transfers:[],
+        
 
-        numberOfDays_competition:10,
-        competitionStartBlock:4438000,
-        lastKnownBlock:0,
-        /*These values are gonna need to change for another trading competition,
+        /*The following values are gonna need to change for another trading competition,
         the program will automatically compute based on the given values.
          
         --numberOfDays_competition = number of days that the competition will run
         --competitionStartBlock = start block of the competition 
         */  
+
+        numberOfDays_competition:10,
+        competitionStartBlock:4438000,
+        finder:[],
+        
+        
       }
     }
 
@@ -86,56 +91,77 @@ class App extends Component {
         this.setState({start_time:new Date(parseInt(start_time.timestamp,10)*1000),
                        end_time:new Date(parseInt(start_time.timestamp + competitionDays,10)*1000),
                        lastKnownTime:new Date(parseInt(current_time.timestamp,10)*1000)})
-       
-       ditto_token.getPastEvents("Transfer",{filter: {to:'0x470BC451810B312BBb1256f96B0895D95eA659B1'},fromBlock:this.state.fromBlock, toBlock:this.state.toBlock})
+        let startBlock = this.state.fromBlock;
+        let endBlock = startBlock + 28800;
+      for(var x = 0; x < 10; x++){
+       ditto_token.getPastEvents("Transfer",{filter: {to:'0x470BC451810B312BBb1256f96B0895D95eA659B1'},fromBlock:startBlock, toBlock:endBlock + 28800})
         .then(events=>{
+          console.log('transfers',events.length)
           var newest = events.concat().sort((a,b)=> b.blockNumber- a.blockNumber);
           this.setState({swaps:newest.map(value=>(value.returnValues))},()=>console.log());
-            for(var i = 0; i < this.state.swaps.length;i++){
-                   
-                this.setState({address_swaps:[...this.state.address_swaps,{address:this.state.swaps[i].from,
-                  transfer_in:this.state.swaps[i].value / 1000000000,
-                  ditto_in:0,
-                  ditto_out:0, 
-                  total_volume:(this.state.swaps[i].value / 1000000000),
-                  fromBlock:numeral(this.state.fromBlock).format('0,00'),
-                  toBlock:numeral(this.state.toBlock).format('0,00')}]})
-                
-         let index = this.state.filter.findIndex(x=>x.address === this.state.address_swaps[i].address)
-          if(index === -1){
-            this.setState({filter:[...this.state.filter,this.state.address_swaps[i]]})
-          }
-      
-         else{
-      
-          let filter=  [...this.state.filter]
-          let transfer = this.state.filter[index].transfer_in + this.state.address_swaps[i].transfer_in
-          let In = this.state.filter[index].ditto_in + this.state.address_swaps[i].ditto_in
-          let Out = this.state.filter[index].ditto_out + this.state.address_swaps[i].ditto_out 
-          let total =  transfer
-          
-           filter[index] = {address:this.state.filter[index].address, 
-                            transfer_in:transfer,
-                            ditto_in:In,
-                            ditto_out:Out, 
-                            total_volume:total,
-                            fromBlock:numeral(this.state.fromBlock).format('0,00'),
-                            toBlock:numeral(this.state.toBlock).format('0,00')}
-      
-           this.setState({filter,lastKnownBlock:currentBlock })     
-         }      
-        }
-        
-        this.setState({whitelist:this.state.filter.filter((blacklisted)=>blacklisted.address !== Blacklist.Address[1]
-          && blacklisted.address !== Blacklist.Address[2]
-          && blacklisted.address !== Blacklist.Address[3]
-          && blacklisted.address !== Blacklist.Address[4]
-          && blacklisted.address !== Blacklist.Address[5] 
-          )})
+          for(var i = 0; i < this.state.swaps.length;i++){
+            this.setState({finder:[...this.state.finder,this.state.swaps[i]]})
+            }
+            //console.log('oops',this.state.finder)
     
-        this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume)})
-        }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000 '}))
-        this.loadDay()
+        
+     
+
+
+          }).then(exe=>{
+            for(var i = 0; i < this.state.finder.length;i++){
+          console.log('waa',this.state.finder)
+
+          this.setState({address_swaps:[...this.state.address_swaps,{address:this.state.finder[i].from,
+            transfer_in:this.state.finder[i].value / 1000000000,
+            ditto_in:0,
+            ditto_out:0, 
+            total_volume:(this.state.finder[i].value / 1000000000),
+            fromBlock:numeral(this.state.fromBlock).format('0,00'),
+            toBlock:numeral(this.state.toBlock).format('0,00')}]})
+          
+   let index = this.state.filter.findIndex(x=>x.address === this.state.address_swaps[i].address)
+    if(index === -1){
+      this.setState({filter:[...this.state.filter,this.state.address_swaps[i]]})
+    }
+
+   else{
+
+    let filter=  [...this.state.filter]
+    let transfer = this.state.filter[index].transfer_in + this.state.address_swaps[i].transfer_in
+    let In = this.state.filter[index].ditto_in + this.state.address_swaps[i].ditto_in
+    let Out = this.state.filter[index].ditto_out + this.state.address_swaps[i].ditto_out 
+    let total =  transfer
+    
+     filter[index] = {address:this.state.filter[index].address, 
+                      transfer_in:transfer,
+                      ditto_in:In,
+                      ditto_out:Out, 
+                      total_volume:total,
+                      fromBlock:numeral(this.state.fromBlock).format('0,00'),
+                      toBlock:numeral(this.state.toBlock).format('0,00')}
+
+     this.setState({filter,lastKnownBlock:currentBlock })     
+   }      
+  }
+  
+  this.setState({whitelist:this.state.filter.filter((blacklisted)=>blacklisted.address !== Blacklist.Address[1]
+    && blacklisted.address !== Blacklist.Address[2]
+    && blacklisted.address !== Blacklist.Address[3]
+    && blacklisted.address !== Blacklist.Address[4]
+    && blacklisted.address !== Blacklist.Address[5] 
+    )})
+
+  this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume),loading:false})
+ console.log('sort',this.state.sortedVolume)
+          }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000 '}))
+          startBlock = startBlock + 28800;
+          endBlock = startBlock + 28800;
+  
+        } 
+
+        
+           
         }
 
 
@@ -164,10 +190,13 @@ class App extends Component {
         this.setState({start_time:new Date(parseInt(start_time.timestamp,10)*1000),
                        end_time:new Date(parseInt(start_time.timestamp + competitionDays,10)*1000),
                        lastKnownTime:new Date(parseInt(current_time.timestamp,10)*1000)})
+
+                       
        
         
         ditto_pair.getPastEvents("Swap",{fromBlock:this.state.fromBlock, toBlock:this.state.toBlock})
         .then(events=>{
+          console.log('swaps',events.length)
           var newest = events.concat().sort((a,b)=> b.blockNumber- a.blockNumber);
           this.setState({swaps:newest.map(value=>(value.returnValues))},()=>console.log());
             for(var i = 0; i < this.state.swaps.length;i++){
@@ -667,6 +696,16 @@ componentDidMount() {
  this.loadToken();
   //this.loadDay();
 }
+
+componentDidUpdate(prevProps, prevState) {
+   
+  if(prevState.sortedVolume!==this.state.sortedVolume){
+    this.setState(this.state)
+console.log('1')
+  }
+}
+
+
 
 
 }
