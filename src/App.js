@@ -538,7 +538,7 @@ handleViewChange = (event) => {
   }
 
   else{
-    this.setState({optionText:'View 5-10 Days of Trading Competition'})
+    this.setState({optionText:'View 6-10 Days of Trading Competition'})
   }
   this.setState({competitionStartBlock:blocks,blockError:''},()=>this.loadToken())
 }
