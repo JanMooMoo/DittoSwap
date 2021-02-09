@@ -212,7 +212,7 @@ class App extends Component {
           )})
 
         this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume),loading:false})
-        }).catch((err)=>this.loadDay())
+        }).catch((err)=>this.loadToken())
         
     }
 
@@ -537,7 +537,7 @@ handleViewChange = (event) => {
     this.setState({optionText:'View 1-5 Days of Trading Competition'})
   }
 
-  else{
+  else if(blocks === 4582000) {
     this.setState({optionText:'View 6-10 Days of Trading Competition'})
   }
   this.setState({competitionStartBlock:blocks,blockError:''},()=>this.loadToken())
