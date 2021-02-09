@@ -138,36 +138,30 @@ class App extends Component {
           )})
     
         this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume)})
-        }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false}))
-        this.loadDay()
+        }).catch((err)=>this.loadToken())
+        setTimeout(()=>this.loadDay(),2500)
         }
 
 
 
   async loadDay(){ 
- 
+      
       this.setState({
       swaps:[],
       address_swaps:[],
       address_swapss:[],
       filter:[],
       sortedVolume:[],
-      loading:true
+      loading:true,
+      blockError:''
       })
        
         const web3 = new Web3('https://bsc-dataseed1.binance.org:443');
         const ditto_pair=  new web3.eth.Contract(ditto_swap_abi, ditto_swap_address);
         this.setState({ditto_pair:ditto_pair});
-        const currentBlock = await web3.eth.getBlockNumber()
-        this.setState({fromBlock:this.state.competitionStartBlock,toBlock:this.state.competitionStartBlock + (this.state.blocksPerDay * this.state.numberOfDays_competition),lastKnownBlock:currentBlock })
+        this.setState({fromBlock:this.state.competitionStartBlock,toBlock:this.state.competitionStartBlock + (this.state.blocksPerDay * this.state.numberOfDays_competition)})
 
-        const current_time = await web3.eth.getBlock(this.state.lastKnownBlock)
-        const start_time = await web3.eth.getBlock(this.state.competitionStartBlock)
-        let competitionDays = (this.state.blocksPerDay * this.state.numberOfDays_competition)*3
-
-        this.setState({start_time:new Date(parseInt(start_time.timestamp,10)*1000),
-                       end_time:new Date(parseInt(start_time.timestamp + competitionDays,10)*1000),
-                       lastKnownTime:new Date(parseInt(current_time.timestamp,10)*1000)})
+        
        
         
         ditto_pair.getPastEvents("Swap",{fromBlock:this.state.fromBlock, toBlock:this.state.toBlock})
@@ -205,7 +199,7 @@ class App extends Component {
                       fromBlock:numeral(this.state.fromBlock).format('0,00'),
                       toBlock:numeral(this.state.toBlock).format('0,00')}
       
-           this.setState({filter,lastKnownBlock:currentBlock })     
+           this.setState({filter})     
          }      
         }
         
@@ -218,7 +212,7 @@ class App extends Component {
           )})
 
         this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume),loading:false})
-        }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false}))
+        }).catch((err)=>this.loadDay())
         
     }
 
@@ -288,8 +282,8 @@ async loadSearch(){
       )})
 
     this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume)})
-    }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false}))
-    this.loadBlockchain()
+    }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false,sortedVolume:[]}))
+    setTimeout(()=>this.loadBlockchain(),2000)
     }
 
 
@@ -362,7 +356,7 @@ this.setState({
 
   this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume),loading:false})   
  
-}).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false}))
+}).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false,sortedVolume:[]}))
   
   }
 
@@ -431,8 +425,8 @@ this.setState({
         )})
   
       this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume)})
-      }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false}))
-      this.loadDays()
+      }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false,sortedVolume:[]}))
+      setTimeout(()=>this.loadDays(),2000)
       }
 
 
@@ -503,7 +497,7 @@ this.setState({
 
       this.setState({sortedVolume:this.state.whitelist.concat().sort((a,b)=> b.total_volume - a.total_volume),loading:false})
 
-      }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false}))
+      }).catch((err)=> this.setState({blockError:'Too Deep! Try searching smaller block difference, ie: from-block:4,000,000 to-block:4,200,000',loading:false,sortedVolume:[]}))
       
       }
 
@@ -692,9 +686,8 @@ this.loadToken()
 }
 
 componentDidMount() {
-  this._isMounted = true;
-  
- setTimeout(()=>this.loadToken(),1000);
+  this._isMounted = true; 
+  this.loadToken();
   //this.loadDay();
 }
 
